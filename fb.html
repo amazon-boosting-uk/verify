@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Baji Unique ID Checker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: #000000;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(239, 68, 68, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .container {
+      max-width: 600px;
+      width: 100%;
+      background: rgba(20, 20, 20, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 0 60px rgba(239, 68, 68, 0.3),
+                  0 0 100px rgba(239, 68, 68, 0.1);
+      border: 2px solid rgba(239, 68, 68, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+    
+    h1 {
+      text-align: center;
+      margin-bottom: 8px;
+      font-weight: 900;
+      font-size: clamp(24px, 6vw, 36px);
+      font-family: 'Orbitron', sans-serif;
+      color: #ffffff;
+      text-shadow: 0 0 16px rgba(248, 113, 113, 0.8),
+                   0 0 32px rgba(239, 68, 68, 0.4);
+      letter-spacing: 1px;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #e5e5e5;
+      margin-bottom: 24px;
+      font-size: clamp(13px, 4vw, 15px);
+      font-weight: 500;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 160px;
+      padding: 14px;
+      margin-bottom: 16px;
+      background: rgba(30, 30, 30, 0.8);
+      border: 2px solid rgba(248, 113, 113, 0.3);
+      border-radius: 12px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      color: #ffffff;
+      resize: vertical;
+      transition: all 0.3s ease;
+    }
+    
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    textarea:focus {
+      outline: none;
+      border-color: #ef4444;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    }
+    
+    button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: clamp(15px, 4.5vw, 17px);
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+    }
+    
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(239, 68, 68, 0.6);
+      background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    }
+    
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+    
+    button:disabled {
+      background: #374151;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .status {
+      text-align: center;
+      margin: 16px 0;
+      color: #d1d5db;
+      font-size: 14px;
+      font-style: italic;
+    }
+    
+    .error {
+      color: #fca5a5;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 12px;
+      border-radius: 12px;
+      margin-top: 12px;
+      display: none;
+      text-align: center;
+      font-size: 14px;
+    }
+    
+    .result-card {
+      margin-top: 24px;
+      padding: 30px 20px;
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      border-radius: 16px;
+      display: none;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(239, 68, 68, 0.5),
+                  0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      animation: slideIn 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      animation: shimmer 3s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+    
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .result-card .number {
+      font-size: clamp(48px, 14vw, 72px);
+      font-weight: 900;
+      font-family: 'Orbitron', sans-serif;
+      color: white;
+      line-height: 1.1;
+      margin-bottom: 12px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.8),
+                   0 4px 12px rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 1;
+      white-space: nowrap;
+    }
+    
+    .result-card .label {
+      font-size: clamp(16px, 5vw, 20px);
+      color: white;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 6px;
+    }
+    
+    .result-card .sublabel {
+      font-size: clamp(14px, 4vw, 16px);
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 6px;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+      line-height: 1.4;
+    }
+    
+    code {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Monaco', monospace;
+      font-size: 12px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* Prevent overflow on small screens */
+    @media (max-width: 480px) {
+      .container {
+        padding: 20px 16px;
+      }
+      textarea {
+        height: 140px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>FB Unique ID Checker</h1>
+    <p class="subtitle">Paste your entries to check unique IDs</p>
+
+    <textarea id="inputData" placeholder="Paste your data here (format: username | password | balance)
+
+Example:
+fahim4644 | mypass123 | $25.50
+user99 | secret | $100
+john_doe | pass456 | $50"></textarea>
+
+    <button id="checkBtn" disabled>Loading...</button>
+
+    <div class="status" id="status">Loading existing usernames from database...</div>
+    <div class="error" id="error"></div>
+
+    <div class="result-card" id="results">
+      <div class="number" id="totalBDT">0</div>
+      <div class="label">Total BDT</div>
+      <div class="sublabel" id="sublabel">0 unique new IDs × 5 BDT each</div>
+    </div>
+  </div>
+
+  <script>
+    const REMOTE_URL = 'https://raw.githubusercontent.com/amazon-boosting-uk/verify/refs/heads/main/bj.txt';
+    let existingUsernames = new Set();
+
+    const checkBtn = document.getElementById('checkBtn');
+    const statusEl = document.getElementById('status');
+    const errorEl = document.getElementById('error');
+    const resultsEl = document.getElementById('results');
+    const totalBDTEl = document.getElementById('totalBDT');
+    const sublabelEl = document.getElementById('sublabel');
+
+    async function loadExistingList() {
+      try {
+        const response = await fetch(REMOTE_URL);
+        if (!response.ok) throw new Error(`Failed to fetch: ${response.status}`);
+        
+        const text = await response.text();
+        const lines = text.split(/\r?\n/).map(line => line.trim()).filter(line => line !== '');
+        existingUsernames = new Set(lines);
+        
+        statusEl.textContent = `✅ Loaded ${existingUsernames.size} existing usernames`;
+        checkBtn.disabled = false;
+        checkBtn.textContent = "Check Usernames";
+      } catch (err) {
+        errorEl.textContent = `❌ Error: ${err.message}`;
+        errorEl.style.display = 'block';
+        statusEl.textContent = "Failed to load database";
+      }
+    }
+
+    function extractUsername(line) {
+      const parts = line.split('|');
+      return parts[0]?.trim() || '';
+    }
+
+    function checkUsernames() {
+      const input = document.getElementById('inputData').value;
+      
+      if (!input.trim()) {
+        errorEl.textContent = '⚠️ Please paste some data first';
+        errorEl.style.display = 'block';
+        resultsEl.style.display = 'none';
+        return;
+      }
+      
+      errorEl.style.display = 'none';
+      const lines = input.split('\n');
+      
+      const rawUsernames = lines
+        .map(line => line.trim())
+        .filter(line => line !== '')
+        .map(extractUsername)
+        .filter(name => name !== '');
+
+      const uniqueInput = [...new Set(rawUsernames)];
+
+      let uniqueNewCount = 0;
+      for (const username of uniqueInput) {
+        if (!existingUsernames.has(username)) {
+          uniqueNewCount++;
+        }
+      }
+
+      const totalBDT = uniqueNewCount * 5;
+      
+      totalBDTEl.textContent = totalBDT + ' ৳';
+      sublabelEl.textContent = `${uniqueNewCount} unique new IDs × 5 BDT each`;
+      resultsEl.style.display = 'block';
+    }
+
+    loadExistingList();
+    checkBtn.addEventListener('click', checkUsernames);
+  </script>
+</body>
+</html>
